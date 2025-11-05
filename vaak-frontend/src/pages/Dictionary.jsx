@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Paper, Typography, CircularProgress } from '@mui/material';
-import axiosClient from '../api/axiosClient';
+import { fetchDictionaryDefinition } from '../api/api';
 
 const Dictionary = () => {
   const [word, setWord] = useState('');
@@ -16,8 +16,8 @@ const Dictionary = () => {
     setResult(null);
 
     try {
-      const response = await axiosClient.get(`/dictionary/${word}`);
-      setResult(response.data);
+      const data = await fetchDictionaryDefinition(word);
+      setResult(data);
     } catch (err) {
       setError('Word not found or an error occurred.');
       console.error(err);

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 
-const MessageBubble = ({ sender, text }) => {
+const MessageBubble = ({ sender, text, isHtml }) => {
   const isUser = sender === 'user';
-
   return (
     <Box
       sx={{
@@ -21,7 +20,11 @@ const MessageBubble = ({ sender, text }) => {
           maxWidth: '70%',
         }}
       >
-        <Typography variant="body1">{text}</Typography>
+        {isHtml ? (
+          <Typography variant="body1" component="span" dangerouslySetInnerHTML={{ __html: text }} />
+        ) : (
+          <Typography variant="body1">{text}</Typography>
+        )}
       </Paper>
     </Box>
   );
