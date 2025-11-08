@@ -5,13 +5,13 @@ import Loader from "./Loader";
 import { sendChatMessage } from "../api/api";
 
 const ChatWindow = () => {
-  const [messages, setMessages] = useState([]); // { text, sender: 'user' | 'bot' }
+  const [messages, setMessages] = useState([]); // { text, sender: 'user' | 'bot', isHtml?, intent? }
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [targetLang, setTargetLang] = useState("en"); // default language
+  const [targetLang, setTargetLang] = useState("en");
   const messagesEndRef = useRef(null);
 
-  // Scroll to bottom when messages update
+  // Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
@@ -26,20 +26,43 @@ const ChatWindow = () => {
 
     try {
       const res = await sendChatMessage(input, targetLang);
+
       let botText = "";
+      let isHtml = false;
+      let intent = res.intent || "";
+
       if (res.translation && res.translation.translated_text) {
         botText = res.translation.translated_text;
-      } else if (res.definition) {
-        botText = JSON.stringify(res.definition, null, 2);
-      } else if (res.example) {
-        botText = res.example;
-      } else if (res.text) {
-        botText = res.text;
+      } 
+      else if (res.definition) {
+      // Prefer the pre-formatted HTML version if available
+      if (res.definition.html) {
+        botText = res.definition.html;
+        isHtml = true;
+        intent = "define";
       } else {
+        botText = JSON.stringify(res.definition, null, 2);
+        }
+      } 
+      else if (res.example) {
+        botText = res.example;
+      } 
+      else if (res.text) {
+        botText = res.text;
+      } 
+      else {
         botText = JSON.stringify(res);
       }
-      const botMessage = { text: botText, sender: "bot" };
+
+      const botMessage = {
+        text: botText,
+        sender: "bot",
+        isHtml: !!(res.definition && res.definition.html),
+        intent: res.intent || ""
+      };
       setMessages((prev) => [...prev, botMessage]);
+
+
     } catch (err) {
       console.error(err);
       const botMessage = { text: "Error: Could not get response.", sender: "bot" };
@@ -50,17 +73,41 @@ const ChatWindow = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2, maxWidth: 600, margin: "20px auto", display: "flex", flexDirection: "column", height: "600px" }}>
-      {/* Messages */}
-      <Box sx={{ flex: 1, overflowY: "auto", mb: 2, display: "flex", flexDirection: "column" }}>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 2,
+        maxWidth: 600,
+        margin: "20px auto",
+        display: "flex",
+        flexDirection: "column",
+        height: "600px",
+      }}
+    >
+      {/* Chat Messages */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {messages.map((msg, idx) => (
-          <MessageBubble key={idx} text={msg.text} sender={msg.sender} />
+          <MessageBubble
+            key={idx}
+            text={msg.text}
+            sender={msg.sender}
+            isHtml={msg.isHtml}
+            intent={msg.intent}
+          />
         ))}
         {loading && <Loader />}
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Input area */}
+      {/* Input Field */}
       <Box sx={{ display: "flex", gap: 1 }}>
         <TextField
           variant="outlined"
@@ -75,7 +122,7 @@ const ChatWindow = () => {
         </Button>
       </Box>
 
-      {/* Language selector */}
+      {/* Target Language Selector */}
       <Box sx={{ mt: 1 }}>
         <Typography variant="body2">Translate to:</Typography>
         <TextField

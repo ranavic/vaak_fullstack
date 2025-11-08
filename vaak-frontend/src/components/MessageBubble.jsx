@@ -1,8 +1,10 @@
 import React from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 
-const MessageBubble = ({ sender, text, isHtml }) => {
+const MessageBubble = ({ sender, text, isHtml, intent }) => {
   const isUser = sender === 'user';
+  const renderAsHtml = isHtml && intent === 'define'; // ✅ Only allow for dictionary results
+
   return (
     <Box
       sx={{
@@ -20,8 +22,12 @@ const MessageBubble = ({ sender, text, isHtml }) => {
           maxWidth: '70%',
         }}
       >
-        {isHtml ? (
-          <Typography variant="body1" component="span" dangerouslySetInnerHTML={{ __html: text }} />
+        {renderAsHtml ? (
+          <Typography
+            variant="body1"
+            component="span"
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
         ) : (
           <Typography variant="body1">{text}</Typography>
         )}
