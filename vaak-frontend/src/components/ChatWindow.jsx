@@ -8,7 +8,7 @@ const ChatWindow = () => {
   const [messages, setMessages] = useState([]); // { text, sender: 'user' | 'bot' }
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [targetLang, setTargetLang] = useState("es"); // default language
+  const [targetLang, setTargetLang] = useState("en"); // default language
   const messagesEndRef = useRef(null);
 
   // Scroll to bottom when messages update

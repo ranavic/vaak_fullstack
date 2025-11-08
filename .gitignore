@@ -7,11 +7,18 @@ Thumbs.db
 *.tmp
 *.swp
 *.swo
+*.bak
+*.orig
+*.old
+*~
 .vscode/
 .idea/
-.env
-.env.local
-.env.*.local
+Desktop.ini
+
+# ==========================
+# Environment Files
+# ==========================
+.env*
 
 # ==========================
 # Python / FastAPI (Backend)
@@ -20,19 +27,16 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.sqlite3
-instance/
 .venv/
 venv/
 env/
-.env/
+instance/
 .pytest_cache/
 .mypy_cache/
 coverage/
 dist/
 build/
 *.egg-info/
-# local test dbs
 *.db
 
 # ==========================
@@ -43,35 +47,18 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-# build outputs
 dist/
 build/
 .cache/
 .next/
 out/
-# local env
 .vite/
-.env.development.local
-.env.production.local
-.env.test.local
 
 # ==========================
-# OS-generated files
+# MongoDB and Local Data
 # ==========================
-*.bak
-*.tmp
-*.orig
-*.old
-*~
-Desktop.ini
-
-# ==========================
-# Miscellaneous
-# ==========================
-# local MongoDB data folders (if any)
 data/
 dump/
-# local uploads or temp files
 uploads/
 media/
 temp/

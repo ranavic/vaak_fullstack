@@ -1,0 +1,36 @@
+.gooey-nav {
+  --background-color: #1a1a1a;
+  --indicator-color: #00bfff;
+  position: relative;
+  background-color: var(--background-color);
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: url('#gooey');
+}
+
+.gooey-nav-item {
+  position: relative;
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  margin: 0 20px;
+  padding: 10px;
+  z-index: 1;
+}
+
+.gooey-nav-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: var(--indicator-color);
+  border-radius: 50px;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  z-index: 0;
+}
+
+.gooey-svg {
+  display: none;
+}
