@@ -1,0 +1,65 @@
+# ==========================
+# OS and Editor Junk Files
+# ==========================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.orig
+*.old
+*~
+.vscode/
+.idea/
+Desktop.ini
+
+# ==========================
+# Environment Files
+# ==========================
+.env*
+
+# ==========================
+# Python / FastAPI (Backend)
+# ==========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+instance/
+.pytest_cache/
+.mypy_cache/
+coverage/
+dist/
+build/
+*.egg-info/
+*.db
+
+# ==========================
+# Node / React (Frontend)
+# ==========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+.next/
+out/
+.vite/
+
+# ==========================
+# MongoDB and Local Data
+# ==========================
+data/
+dump/
+uploads/
+media/
+temp/
+logs/
