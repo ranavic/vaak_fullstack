@@ -109,14 +109,18 @@ const History = () => {
         variant="outlined"
         color="error"
         onClick={handleClearAll}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2,
+          "&:hover": {
+          color: "#FFFFFF"
+        }
+        }} 
       >
         Clear All History
       </Button>
 
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
-
+      
       <Paper>
         <List>
           {history.map((item) => (

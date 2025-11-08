@@ -1,25 +1,27 @@
-import React from 'react';
-import { Box, Paper, Typography } from '@mui/material';
+import React from "react";
+import { Box, Paper, Typography } from "@mui/material";
 
 const MessageBubble = ({ sender, text, isHtml, intent }) => {
-  const isUser = sender === 'user';
-  const renderAsHtml = isHtml && intent === 'define'; // ✅ Only allow for dictionary results
+  const isUser = sender === "user";
+  const renderAsHtml = isHtml && intent === "define";
 
   return (
     <Box
       sx={{
-        display: 'flex',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
+        display: "flex",
+        justifyContent: isUser ? "flex-end" : "flex-start",
         mb: 2,
       }}
     >
       <Paper
-        elevation={3}
+        elevation={2}
         sx={{
           p: 2,
-          backgroundColor: isUser ? 'primary.main' : 'background.paper',
-          color: isUser ? 'primary.contrastText' : 'text.primary',
-          maxWidth: '70%',
+          maxWidth: "70%",
+          backgroundColor: isUser ? "#8B5E34" : "rgba(255, 250, 236, 1)",
+          color: isUser ? "#FFF9F5" : "#3C2C20",
+          borderRadius: isUser ? "16px 16px 0 16px" : "16px 16px 16px 0",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
         }}
       >
         {renderAsHtml ? (
