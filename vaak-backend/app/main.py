@@ -6,7 +6,10 @@ app = FastAPI(title="Vaak API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # frontend dev server
+    allow_origins=[
+        "https://vaakfrontend.vercel.app",
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
