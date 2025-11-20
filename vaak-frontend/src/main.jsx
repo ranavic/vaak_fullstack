@@ -4,7 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { ChatProvider } from "./context/ChatContext";
 import router from "./router";
-import theme from "./theme"; // 👈 import your new warm theme
+import theme from "./theme"; // import your new warm theme
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
