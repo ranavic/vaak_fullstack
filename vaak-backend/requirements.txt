@@ -1,0 +1,26 @@
+fastapi
+uvicorn
+starlette
+pydantic
+pydantic-settings
+python-dotenv
+
+# Database and Auth
+motor
+pymongo
+bcrypt
+passlib
+python-jose
+python-multipart
+email-validator
+
+# Translation and API Calls
+deep-translator
+indic-transliteration
+langdetect==1.0.9
+httpx
+requests
+
+# Dev / Utilities
+pytest
+watchfiles
