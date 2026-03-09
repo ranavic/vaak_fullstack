@@ -88,12 +88,13 @@ async def handle_message(payload: dict):
         source = parsed.get("source") or payload.get("source_lang", "auto")
         target = parsed.get("target") or payload.get("target_lang", "en")
 
-        # detect "in Hindi" or "to French"
+        # Fallback detect "in Hindi" or "to French" if intent parser missed it
         match = re.search(r"^(.*?)\s+(?:in|to)\s+([A-Za-z]+)$", text_to_translate.strip(), re.IGNORECASE)
         if match:
             text_to_translate = match.group(1).strip()
-            lang_name = match.group(2).lower()
-            target = lang_map.get(lang_name, lang_name)
+            target = match.group(2).lower()
+            
+        target = lang_map.get(target.lower(), target.lower())
 
         translated = await translate_text(text_to_translate, target, source)
         result["translation"] = translated
