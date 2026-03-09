@@ -16,7 +16,11 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 @router.delete("/history/{id}")
 async def delete_history_item(id: str):
-    result = await history_collection.delete_one({"_id": ObjectId(id)})
+    try:
+        result = await history_collection.delete_one({"_id": ObjectId(id)})
+    except Exception:
+        return JSONResponse(status_code=400, content={"error": "Invalid ID format"})
+        
     if result.deleted_count == 1:
         return {"status": "deleted"}
     return JSONResponse(status_code=404, content={"error": "Item not found"})
@@ -30,7 +34,11 @@ async def clear_history():
 
 @router.get("/history/{id}")
 async def get_history_item(id: str):
-    doc = await history_collection.find_one({"_id": ObjectId(id)})
+    try:
+        doc = await history_collection.find_one({"_id": ObjectId(id)})
+    except Exception:
+        return JSONResponse(status_code=400, content={"error": "Invalid ID format"})
+        
     if not doc:
         return JSONResponse(status_code=404, content={"error": "Item not found"})
     doc["id"] = str(doc["_id"])
@@ -129,8 +137,15 @@ async def handle_message(payload: dict):
             result["text"] = "Sorry, I couldn't interpret that. Try 'X to Spanish' or 'meaning of serendipity'."
 
     # --- SAVE CHAT HISTORY ---
+    user_object_id = None
+    if user_id:
+        try:
+            user_object_id = ObjectId(user_id)
+        except Exception:
+            pass # Invalid ObjectId format, leave as None
+
     history_doc = {
-        "user_id": ObjectId(user_id) if user_id else None,
+        "user_id": user_object_id,
         "query": text,
         "intent": parsed["intent"],
         "result": result
