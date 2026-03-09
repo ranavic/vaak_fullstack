@@ -18,10 +18,10 @@ const MessageBubble = ({ sender, text, isHtml, intent }) => {
         sx={{
           p: 2,
           maxWidth: "70%",
-          backgroundColor: isUser ? "#8B5E34" : "rgba(255, 250, 236, 1)",
-          color: isUser ? "#FFF9F5" : "#3C2C20",
+          backgroundColor: isUser ? "#7A5C43" : "#FFFFFF",
+          color: isUser ? "#FFFFFF" : "#2C221B",
           borderRadius: isUser ? "16px 16px 0 16px" : "16px 16px 16px 0",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+          boxShadow: "0 4px 12px rgba(44, 34, 27, 0.06)",
         }}
       >
         {renderAsHtml ? (

@@ -10,15 +10,15 @@ function App() {
   const getPageColors = (path) => {
     switch (path) {
       case "/":
-        return { bg: "#F8EBD5", heading: "#5E3D22" }; // warm beige + deep brown
+        return { bg: "#FDFBF7", heading: "#3A2D23" }; // Alabaster + espresso
       case "/dictionary":
-        return { bg: "#FAE6D0", heading: "#6B4220" }; // light sand tone
+        return { bg: "#F9F6F0", heading: "#3A2D23" }; // Very soft cream + espresso
       case "/translate":
-        return { bg: "#F5E0C8", heading: "#4B2C13" }; // creamy paper + espresso
+        return { bg: "#F5F1EA", heading: "#3A2D23" }; // Light pearl + espresso
       case "/history":
-        return { bg: "#F3E8D2", heading: "#5A3B1E" }; // soft parchment + walnut
+        return { bg: "#F2EDE4", heading: "#3A2D23" }; // Pale mushroom + espresso
       default:
-        return { bg: "#F8EBD5", heading: "#5E3D22" };
+        return { bg: "#FDFBF7", heading: "#3A2D23" };
     }
   };
 
@@ -56,7 +56,7 @@ function App() {
         >
           {!isHomePage && (
             <motion.div
-              initial={{ color: "#3B2A14" }}
+              initial={{ color: "#2C221B" }}
               animate={{ color: colors.heading }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
               className="text-center font-semibold text-3xl md:text-4xl tracking-wide mb-6"

@@ -146,7 +146,7 @@ const History = () => {
                           <span
                             style={{
                               cursor: 'pointer',
-                              color: '#1976d2',
+                              color: '#B38762',
                               textDecoration: 'underline',
                             }}
                             onClick={() => handleWordClick(word)}

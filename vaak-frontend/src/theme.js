@@ -4,30 +4,42 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#8B5E34", // deep caramel brown
-      contrastText: "#FFF9F5", // light beige text
+      main: "#7A5C43", // sophisticated muted brown
+      contrastText: "#FFFFFF", // crisp white text
     },
     secondary: {
-      main: "#A86F3A", // warm amber accent
+      main: "#B38762", // soft caramel accent
     },
     background: {
-      default: "#FFF9F0", // soft parchment beige
-      paper: "#FFF7E0",   // lighter paper tone
+      default: "#FDFBF7", // alabaster/cream base
+      paper: "#FFFFFF",   // clean white for contrast
     },
     text: {
-      primary: "#3B2A14", // dark walnut text
-      secondary: "#5E3D22",
+      primary: "#2C221B", // deepest espresso
+      secondary: "#685241", // muted taupe brown
     },
   },
   components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+          borderRadius: 16,
+          boxShadow: "0 6px 20px rgba(44, 34, 27, 0.04)",
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: "none",
-          borderRadius: 8,
-          boxShadow: "0 3px 6px rgba(0,0,0,0.15)",
+          fontWeight: 600,
+          borderRadius: 10,
+          padding: "8px 20px",
+          boxShadow: "0 4px 10px rgba(122, 92, 67, 0.2)",
           "&:hover": {
-            backgroundColor: "#6a3e3eff",
+            backgroundColor: "#5C4330",
+            boxShadow: "0 6px 14px rgba(122, 92, 67, 0.3)",
           },
         },
       },
@@ -35,8 +47,12 @@ const theme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 10,
+            backgroundColor: "#FDFBF7",
+          },
           "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#8B5E34",
+            borderColor: "#7A5C43",
           },
         },
       },
@@ -44,13 +60,17 @@ const theme = createTheme({
     MuiCircularProgress: {
       styleOverrides: {
         root: {
-          color: "#8B5E34",
+          color: "#7A5C43",
         },
       },
     },
   },
   typography: {
     fontFamily: "'Inter', sans-serif",
+    h4: {
+      fontWeight: 600,
+      color: "#2C221B",
+    },
   },
 });
 

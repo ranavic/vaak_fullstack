@@ -8,7 +8,7 @@ const Navbar = () => {
       position="static"
       elevation={0}
       sx={{
-        background: "linear-gradient(90deg, #82534bff 0%, #7d4d45ff 100%)",
+        background: "linear-gradient(90deg, #6A4D37 0%, #5E412A 100%)",
         color: "#FFFFFF",
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
       }}
@@ -47,7 +47,7 @@ const Navbar = () => {
             component={Link}
             to={item.to}
             sx={{
-              backgroundColor: "#5E3D22",
+              backgroundColor: "#5E412A",
               color: "#FFFFFF",
               fontWeight: "bold",
               textTransform: "none",
@@ -55,7 +55,7 @@ const Navbar = () => {
               fontSize: { xs: "0.75rem", sm: "0.875rem" },
               transition: "background-color 0.3s ease, transform 0.2s ease-in-out",
               "&:hover": {
-                backgroundColor: "#5d3737ff",
+                backgroundColor: "#4C3320",
                 transform: "translateY(-2px)",
               },
             }}
