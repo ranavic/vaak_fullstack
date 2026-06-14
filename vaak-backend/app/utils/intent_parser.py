@@ -1,6 +1,42 @@
 import re
 from typing import Dict, Any
 
+LANGUAGE_NAMES = {
+    "arabic",
+    "bengali",
+    "chinese",
+    "danish",
+    "dutch",
+    "english",
+    "finnish",
+    "french",
+    "german",
+    "greek",
+    "gujarati",
+    "hindi",
+    "italian",
+    "japanese",
+    "kannada",
+    "korean",
+    "malayalam",
+    "marathi",
+    "nepali",
+    "norwegian",
+    "odia",
+    "polish",
+    "portuguese",
+    "punjabi",
+    "russian",
+    "sinhala",
+    "spanish",
+    "swedish",
+    "tamil",
+    "telugu",
+    "turkish",
+    "urdu",
+}
+
+
 def parse_intent(text: str) -> Dict[str, Any]:
     text_low = text.lower().strip()
 
@@ -26,33 +62,6 @@ def parse_intent(text: str) -> Dict[str, Any]:
             "target": m.group(2).strip(),
         }
 
-    # Pattern 3: simple "hello in hindi" or "good morning in french"
-    m = re.search(r"^(.+?)\s+(?:in|to|into)\s+([a-zA-Z\-]+)$", text_low)
-    if m:
-        return {
-            "intent": "translate",
-            "text": m.group(1).strip(),
-            "target": m.group(2).strip(),
-        }
-
-    # Pattern 4: "translate hello" (no target specified)
-    m = re.search(r"^translate\s+(.+)$", text_low)
-    if m:
-        return {
-            "intent": "translate",
-            "text": m.group(1).strip(),
-            "target": "en",  # default to English
-        }
-
-    # Pattern 5: "<word> spanish" (e.g., "hello spanish")
-    m = re.search(r"^(.+?)\s+([a-zA-Z]{2,})$", text_low)
-    if m:
-        return {
-            "intent": "translate",
-            "text": m.group(1).strip(),
-            "target": m.group(2).strip(),
-        }
-
     # ==========================
     # DEFINITION INTENT
     # ==========================
@@ -64,6 +73,37 @@ def parse_intent(text: str) -> Dict[str, Any]:
         m = re.search(pattern, text_low)
         if m:
             return {"intent": "define", "word": m.group(1).strip()}
+
+    # Pattern 3: simple "hello in hindi" or "good morning in french"
+    m = re.search(r"^(.+?)\s+(?:in|to|into)\s+([a-zA-Z\-]+)$", text_low)
+    if m:
+        target = m.group(2).strip()
+        if target in LANGUAGE_NAMES:
+            return {
+                "intent": "translate",
+                "text": m.group(1).strip(),
+                "target": target,
+            }
+
+    # Pattern 4: "translate hello" (no target specified)
+    m = re.search(r"^translate\s+(.+)$", text_low)
+    if m:
+        return {
+            "intent": "translate",
+            "text": m.group(1).strip(),
+            "target": "en",  # default to English
+        }
+
+    # Pattern 5: "<text> spanish" (only if the last word is a known language)
+    m = re.search(r"^(.+?)\s+([a-zA-Z]{2,})$", text_low)
+    if m:
+        target = m.group(2).strip()
+        if target in LANGUAGE_NAMES:
+            return {
+                "intent": "translate",
+                "text": m.group(1).strip(),
+                "target": target,
+            }
 
     # ==========================
     # EXAMPLE INTENT

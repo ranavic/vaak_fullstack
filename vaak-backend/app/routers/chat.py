@@ -1,11 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from datetime import datetime
+
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from app.deps import get_current_user_id, get_session_id
 from app.utils.intent_parser import parse_intent
 from app.services.dictionary_service import get_definition, get_example
 from app.services.translate_service import translate_text
 from app.db.mongo import history_collection
-from bson import ObjectId
 import re
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -14,10 +17,31 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 # HISTORY ROUTES
 # ----------------------------
 
+def build_history_scope(user_id: ObjectId | None, session_id: str | None) -> dict:
+    if user_id:
+        return {"user_id": user_id}
+    if session_id:
+        return {"session_id": session_id}
+    raise HTTPException(status_code=400, detail="Missing session id")
+
+
+def serialize_history_doc(doc: dict) -> dict:
+    doc["id"] = str(doc["_id"])
+    doc.pop("_id", None)
+    if doc.get("user_id"):
+        doc["user_id"] = str(doc["user_id"])
+    return doc
+
+
 @router.delete("/history/{id}")
-async def delete_history_item(id: str):
+async def delete_history_item(
+    id: str,
+    user_id: ObjectId | None = Depends(get_current_user_id),
+    session_id: str | None = Depends(get_session_id),
+):
+    scope = build_history_scope(user_id, session_id)
     try:
-        result = await history_collection.delete_one({"_id": ObjectId(id)})
+        result = await history_collection.delete_one({"_id": ObjectId(id), **scope})
     except Exception:
         return JSONResponse(status_code=400, content={"error": "Invalid ID format"})
         
@@ -27,32 +51,41 @@ async def delete_history_item(id: str):
 
 
 @router.delete("/history")
-async def clear_history():
-    await history_collection.delete_many({})
+async def clear_history(
+    user_id: ObjectId | None = Depends(get_current_user_id),
+    session_id: str | None = Depends(get_session_id),
+):
+    scope = build_history_scope(user_id, session_id)
+    await history_collection.delete_many(scope)
     return {"status": "cleared"}
 
 
 @router.get("/history/{id}")
-async def get_history_item(id: str):
+async def get_history_item(
+    id: str,
+    user_id: ObjectId | None = Depends(get_current_user_id),
+    session_id: str | None = Depends(get_session_id),
+):
+    scope = build_history_scope(user_id, session_id)
     try:
-        doc = await history_collection.find_one({"_id": ObjectId(id)})
+        doc = await history_collection.find_one({"_id": ObjectId(id), **scope})
     except Exception:
         return JSONResponse(status_code=400, content={"error": "Invalid ID format"})
         
     if not doc:
         return JSONResponse(status_code=404, content={"error": "Item not found"})
-    doc["id"] = str(doc["_id"])
-    doc.pop("_id", None)
-    return JSONResponse(content=jsonable_encoder(doc))
+    return JSONResponse(content=jsonable_encoder(serialize_history_doc(doc)))
 
 
 @router.get("/history")
-async def get_history():
+async def get_history(
+    user_id: ObjectId | None = Depends(get_current_user_id),
+    session_id: str | None = Depends(get_session_id),
+):
+    scope = build_history_scope(user_id, session_id)
     docs = []
-    async for doc in history_collection.find().sort("_id", -1):
-        doc["id"] = str(doc["_id"])
-        doc.pop("_id", None)
-        docs.append(doc)
+    async for doc in history_collection.find(scope).sort("_id", -1):
+        docs.append(serialize_history_doc(doc))
     return JSONResponse(content=jsonable_encoder(docs))
 
 
@@ -61,9 +94,17 @@ async def get_history():
 # ----------------------------
 
 @router.post("/message")
-async def handle_message(payload: dict):
+async def handle_message(
+    payload: dict,
+    user_id: ObjectId | None = Depends(get_current_user_id),
+    session_id: str | None = Depends(get_session_id),
+):
     text = payload.get("text", "").strip()
-    user_id = payload.get("user_id")
+    if not text:
+        raise HTTPException(status_code=400, detail="Message text is required")
+    if not user_id and not session_id:
+        raise HTTPException(status_code=400, detail="Missing session id")
+
     parsed = parse_intent(text)
     result = {"intent": parsed["intent"]}
 
@@ -123,7 +164,6 @@ async def handle_message(payload: dict):
         result["example"] = ex or "No example found."
 
     # --- FALLBACK ---
-    # --- FALLBACK ---
     else:
         if len(text.split()) == 1:
             definition = await get_definition(text)
@@ -137,18 +177,13 @@ async def handle_message(payload: dict):
             result["text"] = "Sorry, I couldn't interpret that. Try 'X to Spanish' or 'meaning of serendipity'."
 
     # --- SAVE CHAT HISTORY ---
-    user_object_id = None
-    if user_id:
-        try:
-            user_object_id = ObjectId(user_id)
-        except Exception:
-            pass # Invalid ObjectId format, leave as None
-
     history_doc = {
-        "user_id": user_object_id,
+        "user_id": user_id,
+        "session_id": session_id,
         "query": text,
-        "intent": parsed["intent"],
-        "result": result
+        "intent": result["intent"],
+        "result": result,
+        "created_at": datetime.utcnow(),
     }
     await history_collection.insert_one(history_doc)
 

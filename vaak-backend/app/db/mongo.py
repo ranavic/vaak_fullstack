@@ -10,4 +10,3 @@ history_collection = db["history"]
 dictionary_collection = db["dictionary"]
 translations_collection = db["translations"]
 
-print(f"✅ Connected to MongoDB at {settings.MONGODB_URI}, using database '{settings.DATABASE_NAME}'")

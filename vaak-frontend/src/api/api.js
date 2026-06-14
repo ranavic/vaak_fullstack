@@ -1,6 +1,5 @@
 import axiosClient from "./axiosClient";
 
-// Fetch translation
 export async function fetchTranslation(text, targetLang, sourceLang = "auto") {
   try {
     const payload = {
@@ -22,7 +21,6 @@ export async function fetchTranslation(text, targetLang, sourceLang = "auto") {
 }
 
 
-// Fetch all languages
 export async function fetchLanguages() {
   try {
     const res = await axiosClient.get("/api/translate/languages");
@@ -33,27 +31,32 @@ export async function fetchLanguages() {
   }
 }
 
-// Fetch user profile
-export async function fetchUserProfile(userId) {
+export async function sendChatMessage(text, targetLang = "en") {
   try {
-    const res = await axiosClient.get(`/users/${userId}`);
-    return res.data;
-  } catch (error) {
-        throw error;
-      }
-    }
-    
-    // Send chat message
-
-// Send chat message
-export async function sendChatMessage(text) {
-  try {
-    const res = await axiosClient.post("/api/chat/message", { text });
+    const res = await axiosClient.post("/api/chat/message", {
+      text,
+      target_lang: targetLang,
+    });
     return res.data;
   } catch (error) {
     console.error("Chat API error:", error);
     throw error;
   }
+}
+
+export async function fetchHistory() {
+  const res = await axiosClient.get("/api/chat/history");
+  return res.data;
+}
+
+export async function deleteHistoryItem(id) {
+  const res = await axiosClient.delete(`/api/chat/history/${id}`);
+  return res.data;
+}
+
+export async function clearHistory() {
+  const res = await axiosClient.delete("/api/chat/history");
+  return res.data;
 }
 
 // Fetch dictionary definition

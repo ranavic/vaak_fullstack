@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Box, TextField, Button, Paper } from '@mui/material';
+import { Box, TextField, Button, Paper, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { ChatContext } from '../context/ChatContext';
 import { sendChatMessage } from '../api/api';
@@ -26,13 +26,12 @@ const Home = () => {
       let isHtml = false;
       let intent = response.intent || '';
 
-      // ✅ Handle different intents
       if (response.translation && response.translation.translated_text) {
         botText = response.translation.translated_text;
 
       } else if (response.definition && response.definition.html) {
         botText = response.definition.html;
-        isHtml = true; // Only HTML if definition contains markup
+        isHtml = true;
 
       } else if (response.example) {
         botText = response.example;
@@ -57,16 +56,23 @@ const Home = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
-      <Paper sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)', maxWidth: 920, mx: 'auto', p: { xs: 1.5, md: 3 }, gap: 2 }}>
+      <Paper sx={{ flexGrow: 1, overflowY: 'auto', p: { xs: 2, md: 3 }, border: '1px solid #E8DED2' }}>
+        {messages.length === 0 && (
+          <Box sx={{ height: '100%', display: 'grid', placeItems: 'center', textAlign: 'center', color: 'text.secondary' }}>
+            <Box>
+              <Typography variant="h5" sx={{ color: 'text.primary', mb: 1 }}>Ask Vaak</Typography>
+              <Typography>Translate a phrase, define a word, or ask for an example.</Typography>
+            </Box>
+          </Box>
+        )}
         {messages.map((msg, index) => (
           <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
+            key={`${msg.sender}-${index}-${msg.text.slice(0, 12)}`}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25 }}
           >
-            {/* ✅ Pass both isHtml and intent */}
             <MessageBubble
               sender={msg.sender}
               text={msg.text}
@@ -78,16 +84,16 @@ const Home = () => {
         {isLoading && <Loader />}
       </Paper>
 
-      <Box sx={{ p: 2, display: 'flex' }}>
+      <Box sx={{ display: 'flex', gap: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}>
         <TextField
           fullWidth
           variant="outlined"
           placeholder="Type your message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         />
-        <Button variant="contained" color="primary" onClick={handleSend} sx={{ ml: 2 }}>
+        <Button variant="contained" color="primary" onClick={handleSend} sx={{ px: 4 }}>
           Send
         </Button>
       </Box>

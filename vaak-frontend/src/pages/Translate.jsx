@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  TextField,
   Button,
-  Paper,
-  Typography,
   CircularProgress,
-  Select,
-  MenuItem,
   FormControl,
   InputLabel,
-} from '@mui/material';
-import { fetchTranslation, fetchLanguages } from '../api/api';
+  MenuItem,
+  Paper,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { fetchLanguages, fetchTranslation } from "../api/api";
+import PageShell from "../components/PageShell";
 
 const Translate = () => {
-  const [text, setText] = useState('');
-  const [translatedText, setTranslatedText] = useState('');
-  const [romanizedText, setRomanizedText] = useState(''); // 👈 new state
-  const [sourceLang, setSourceLang] = useState('auto'); // default to auto-detect
-  const [targetLang, setTargetLang] = useState('en');
+  const [text, setText] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
+  const [romanizedText, setRomanizedText] = useState("");
+  const [sourceLang, setSourceLang] = useState("auto");
+  const [targetLang, setTargetLang] = useState("en");
   const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [langLoading, setLangLoading] = useState(true);
@@ -29,57 +30,50 @@ const Translate = () => {
     const getLanguages = async () => {
       setLangLoading(true);
       try {
-        const fetchedLanguages = await fetchLanguages();
-        setLanguages(fetchedLanguages);
+        setLanguages(await fetchLanguages());
       } catch (err) {
-        console.error('Failed to fetch languages:', err);
+        console.error("Failed to fetch languages:", err);
+        setError("Could not load languages.");
+      } finally {
+        setLangLoading(false);
       }
-      setLangLoading(false);
     };
     getLanguages();
   }, []);
 
   const handleTranslate = async () => {
-    if (text.trim() === '') return;
+    if (!text.trim()) return;
 
     setLoading(true);
     setError(null);
-    setTranslatedText('');
-    setRomanizedText('');
+    setTranslatedText("");
+    setRomanizedText("");
     setDetectedLang(null);
 
     try {
       const response = await fetchTranslation(text, targetLang, sourceLang);
-      setTranslatedText(response.translated_text);
-      if (response.source_lang) setDetectedLang(response.source_lang);
+      setTranslatedText(response.translated_text || "");
+      setRomanizedText(response.romanized_text || "");
+      setDetectedLang(response.source_lang || null);
 
-      // 👇 New check for failed auto-detection
       if (
-        sourceLang === 'auto' &&
+        sourceLang === "auto" &&
         response.translated_text &&
         response.translated_text.trim().toLowerCase() === text.trim().toLowerCase()
       ) {
-        setError("Couldn't detect the language automatically. Try selecting the source language manually.");
-      }
-
-      if (response.romanized_text) {
-        setRomanizedText(response.romanized_text);
+        setError("Could not detect the language automatically. Try selecting the source language manually.");
       }
     } catch (err) {
-      setError('Translation failed or an error occurred.');
+      setError("Translation failed or an error occurred.");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Translate
-      </Typography>
-
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <PageShell title="Translate">
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
           multiline
           rows={4}
@@ -90,17 +84,9 @@ const Translate = () => {
           onChange={(e) => setText(e.target.value)}
         />
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
           {langLoading ? (
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: 56,
-              }}
-            >
+            <Box sx={{ width: "100%", display: "grid", placeItems: "center", minHeight: 56 }}>
               <CircularProgress size={32} />
             </Box>
           ) : (
@@ -139,50 +125,35 @@ const Translate = () => {
           )}
         </Box>
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleTranslate}
-          sx={{ mt: 2 }}
-        >
+        <Button variant="contained" color="primary" onClick={handleTranslate} disabled={loading}>
           Translate
         </Button>
       </Box>
 
-      {loading && <CircularProgress sx={{ mt: 2 }} />}
-
-      {error && (
-        <Typography color="error" sx={{ mt: 2 }}>
-          {error}
-        </Typography>
-      )}
+      {loading && <CircularProgress />}
+      {error && <Typography color="error">{error}</Typography>}
 
       {translatedText && (
-        <Paper sx={{ p: 3, mt: 3 }}>
+        <Paper sx={{ p: 3, border: "1px solid #E8DED2" }}>
           <Typography variant="h6">Translated Text</Typography>
           <Typography variant="body1" sx={{ mb: 1 }}>
             {translatedText}
           </Typography>
 
-          {/* Romanized output (English alphabet form) */}
-          {romanizedText && (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              sx={{ fontStyle: 'italic', mb: 1 }}
-            >
+          {romanizedText && romanizedText !== translatedText && (
+            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", mb: 1 }}>
               {romanizedText}
             </Typography>
           )}
 
           {detectedLang && (
-            <Typography variant="caption" color="textSecondary">
-              Detected Source: {detectedLang.toUpperCase()} → {targetLang.toUpperCase()}
+            <Typography variant="caption" color="text.secondary">
+              Detected Source: {detectedLang.toUpperCase()} to {targetLang.toUpperCase()}
             </Typography>
           )}
         </Paper>
       )}
-    </Box>
+    </PageShell>
   );
 };
 

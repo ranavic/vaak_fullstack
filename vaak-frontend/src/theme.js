@@ -1,4 +1,3 @@
-// src/theme.js
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
@@ -24,7 +23,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          borderRadius: 16,
+          borderRadius: 8,
           boxShadow: "0 6px 20px rgba(44, 34, 27, 0.04)",
         },
       },
@@ -34,7 +33,7 @@ const theme = createTheme({
         root: {
           textTransform: "none",
           fontWeight: 600,
-          borderRadius: 10,
+          borderRadius: 8,
           padding: "8px 20px",
           boxShadow: "0 4px 10px rgba(122, 92, 67, 0.2)",
           "&:hover": {
@@ -48,7 +47,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-root": {
-            borderRadius: 10,
+            borderRadius: 8,
             backgroundColor: "#FDFBF7",
           },
           "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
@@ -70,6 +69,7 @@ const theme = createTheme({
     h4: {
       fontWeight: 600,
       color: "#2C221B",
+      letterSpacing: 0,
     },
   },
 });
